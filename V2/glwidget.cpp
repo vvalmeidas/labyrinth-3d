@@ -4,6 +4,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <math.h>
+#include <QKeyEvent>
 
 //DEFINES--------------------------------------------
 
@@ -102,19 +103,7 @@ void GLWidget::paintGL() {
     glLoadIdentity(); // Reset current modelview matrix
 }
 
-// Key handler
-void GLWidget::keyPressEvent(QKeyEvent *event) {
-    switch (event->key()) {
-    case Qt::Key_Escape:
-        close(); // Quit on Escape
-        break;
-    case Qt::Key_F1:
-        setWindowState(windowState() ^ Qt::WindowFullScreen); // Toggle fullscreen on F1
-        break;
-    default:
-        QGLWidget::keyPressEvent(event); // Let base class handle the other keys
-    }
-}
+
 
 void GLWidget::changeEvent(QEvent *event) {
     switch (event->type()) {
@@ -238,59 +227,8 @@ void control(unsigned char key, int x, int y){
 
 //-----------------------------------------------------------------
 
-void updatePos(int key, int x, int y){
- float rad;
-
- switch (key){
-  case GLUT_KEY_DOWN:
-
-    if(pode_mover(jog_x, jog_z, - mov_x, -mov_z))
-    {
-      jog_x -= mov_x;
-      jog_z -= mov_z;
-    }
-    break;
 
 
-  case GLUT_KEY_UP:
-
-      if(pode_mover(jog_x, jog_z,  mov_x, mov_z))
-      {
-       jog_x += mov_x;
-       jog_z += mov_z;
-      }
-      break;
-
-  case GLUT_KEY_LEFT:
-
-    angulo -= 10;
-
-     if(angulo < 0) angulo +=360;
-
-
-    rad =  (float) (3.14159 * angulo / 180.0f);
-
-    mov_x =  cos(rad) * PASSO;
-    mov_z =  sin(rad) * PASSO;
-    break;
-
-
-  case GLUT_KEY_RIGHT:
-
-      angulo += 10;
-
-    if(angulo >= 360) angulo -=360;
-
-     rad =  (float) (3.14159 * angulo / 180.0f);
-
-    mov_x = cos(rad) * PASSO;
-    mov_z = sin(rad) * PASSO;
-
-    break;
-
- }//fim do switch
-
-}
 
 //-----------------------------------------------------------------
 void movePerson()
@@ -441,6 +379,57 @@ void movePerson()
 
  glutPostRedisplay();
 }
+
+
+// Key handler
+void GLWidget::keyPressEvent(QKeyEvent *event) {
+    float rad;
+
+    switch (event->key()) {
+        case Qt::Key_Escape:
+            close(); // Quit on Escape
+            break;
+        case Qt::Key_F1:
+            setWindowState(windowState() ^ Qt::WindowFullScreen); // Toggle fullscreen on F1
+            break;
+        case Qt::Key_Right: {
+            angulo += 10;
+            if(angulo >= 360) angulo -=360;
+            rad = (float) (3.14159 * angulo / 180.0f);
+            mov_x = cos(rad) * PASSO;
+            mov_z = sin(rad) * PASSO;
+            break;
+        }
+        case Qt::Key_Left: {
+            angulo -= 10;
+            if(angulo < 0) angulo +=360;
+            rad =  (float) (3.14159 * angulo / 180.0f);
+            mov_x =  cos(rad) * PASSO;
+            mov_z =  sin(rad) * PASSO;
+            break;
+       }
+       case Qt::Key_Up: {
+            if(canMove(jog_x, jog_z,  mov_x, mov_z)) {
+                jog_x += mov_x;
+                jog_z += mov_z;
+            }
+            break;
+       }
+       case Qt::Key_Down: {
+            if(canMove(jog_x, jog_z, -mov_x, -mov_z))
+            {
+              jog_x -= mov_x;
+              jog_z -= mov_z;
+            }
+            break;
+        }
+        default:
+            QGLWidget::keyPressEvent(event); // Let base class handle the other keys
+    }
+
+    updateGL();
+}
+
 
 void Inicializa(void){
 

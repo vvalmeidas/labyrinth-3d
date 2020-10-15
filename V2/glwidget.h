@@ -16,7 +16,7 @@ protected:
     void paintGL();
     void keyPressEvent(QKeyEvent *event);
     void changeEvent(QEvent *event);
-    void canMove(float pos_x, float pos_z, float vet_x, float vet_z);
+    int canMove(float pos_x, float pos_z, float vet_x, float vet_z);
     void display();
     void control(unsigned char key, int x, int y);
     void updatePos(int key, int x, int y);
